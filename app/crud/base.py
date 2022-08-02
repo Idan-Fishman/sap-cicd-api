@@ -3,7 +3,7 @@ Defines base class with generic logic for CRUD operations.
 Every model should inherit this logic and enrich/override it if needed.
 """
 
-from typing import Any, Generic, Type, TypeVar, Union
+from typing import Any, Dict, Generic, List, Optional, Type, TypeVar, Union
 
 from fastapi import HTTPException, status
 from fastapi.encoders import jsonable_encoder
@@ -15,7 +15,7 @@ from app.config import settings
 from app.models import Base
 
 
-ModelType = TypeVar("ModelType", bound=Base)  # type: ignore
+ModelType = TypeVar("ModelType", bound=Base)
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
 UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
 
@@ -36,13 +36,13 @@ class BaseCRUD(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         await session.refresh(db_obj)
         return db_obj
 
-    async def read(self, session: AsyncSession, id: Any) -> ModelType | None:
-        statement = select(self.model).where(self.model.id == id)
+    async def read(self, session: AsyncSession, obj_id: Any) -> Optional[ModelType]:
+        statement = select(self.model).where(self.model.id == obj_id)
         result = await session.execute(statement=statement)
         return result.scalars().first()
 
-    async def read_or_404(self, session: AsyncSession, id: Any) -> ModelType | None:
-        db_obj = await self.read(session=session, id=id)
+    async def read_or_404(self, session: AsyncSession, obj_id: Any) -> ModelType:
+        db_obj = await self.read(session=session, obj_id=obj_id)
         if not db_obj:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -55,7 +55,7 @@ class BaseCRUD(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         session: AsyncSession,
         skip: int = 0,
         limit: int = settings.PAGE_SIZE,
-    ) -> list[ModelType]:
+    ) -> List[ModelType]:
         statement = (
             select(self.model).offset(skip).limit(min(limit, settings.PAGE_SIZE))
         )
@@ -66,7 +66,7 @@ class BaseCRUD(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         self,
         session: AsyncSession,
         db_obj: ModelType,
-        in_obj: Union[UpdateSchemaType, dict[str, Any]],
+        in_obj: Union[UpdateSchemaType, Dict[str, Any]],
     ) -> ModelType:
         obj_data = jsonable_encoder(db_obj)
         if isinstance(in_obj, dict):
@@ -81,8 +81,7 @@ class BaseCRUD(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         await session.refresh(db_obj)
         return db_obj
 
-    async def delete(self, session: AsyncSession, id: Any) -> ModelType | None:
-        db_obj = await self.read(session=session, id=id)
+    async def delete(self, session: AsyncSession, db_obj: ModelType) -> Optional[ModelType]:
         await session.delete(db_obj)
         await session.commit()
         return db_obj

@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
+from app.routers import branch
 
 
 app = FastAPI()
@@ -13,6 +14,8 @@ app.add_middleware(
     allow_methods=settings.CORS_METHODS,
     allow_headers=settings.CORS_HEADERS,
 )
+
+app.include_router(router=branch.router, tags=["branches"])
 
 
 @app.get("/")

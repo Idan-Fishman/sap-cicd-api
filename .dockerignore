@@ -2,8 +2,10 @@
 README.md
 
 # virtual environments
-.venv
 venv/
 
 # git
 .gitignore
+
+# JetBrains
+.idea

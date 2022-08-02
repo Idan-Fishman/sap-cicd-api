@@ -33,6 +33,11 @@ async def override_get_session() -> AsyncSession:
 
 
 @pytest_asyncio.fixture(scope="function")
+async def session(override_get_session) -> AsyncSession:
+    yield override_get_session
+
+
+@pytest_asyncio.fixture(scope="function")
 async def client(override_get_session) -> AsyncClient:
     app.dependency_overrides[get_session] = lambda: override_get_session
     async with AsyncClient(
