@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any
 
 from sqlalchemy.exc import IntegrityError
 
@@ -9,7 +9,7 @@ from .base import BaseCRUD
 
 class BranchCRUD(BaseCRUD[Branch, BranchCreate, BranchUpdate]):
     @staticmethod
-    def integrity_error(error: IntegrityError) -> Dict[str, Any]:
+    def integrity_error(error: IntegrityError) -> dict[str, Any]:
         if error.orig.pgcode == "23505":  # UniqueViolationError is 23505
             error_args_str = "".join(error.orig.args)
 
