@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-from app.routers import branch
+from app.routers import branch, change_request
 
 
 app = FastAPI()
@@ -16,6 +16,7 @@ app.add_middleware(
 )
 
 app.include_router(router=branch.router, tags=["branches"])
+app.include_router(router=change_request.router, tags=["change-requests"])
 
 
 @app.get("/")

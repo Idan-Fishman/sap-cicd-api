@@ -14,3 +14,9 @@ class Branch(Base):
 
     title = Column(String(length=100), nullable=False, unique=True)
     description = Column(String(length=400))
+
+    change_requests = relationship(
+        "ChangeRequest",
+        lazy="selectin",
+        order_by="ChangeRequest.created_at",
+    )

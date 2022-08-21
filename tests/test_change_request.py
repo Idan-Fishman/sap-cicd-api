@@ -2,9 +2,7 @@ import pytest
 from httpx import AsyncClient
 
 
-data = {
-
-}
+data = {}
 
 
 @pytest.mark.asyncio

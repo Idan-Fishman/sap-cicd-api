@@ -26,9 +26,7 @@ class Settings(BaseSettings):
     SQLALCHEMY_DATABASE_URL: PostgresDsn | None
 
     @validator("SQLALCHEMY_DATABASE_URL", pre=True)
-    def assemble_db_connection_string(
-        cls, v: PostgresDsn | None, values: dict[str, Any]
-    ) -> Any:
+    def assemble_db_connection_string(cls, v: PostgresDsn | None, values: dict[str, Any]) -> Any:
         if isinstance(v, str):
             return v
         return PostgresDsn.build(
@@ -42,6 +40,10 @@ class Settings(BaseSettings):
 
     # Pagination
     PAGE_SIZE: int = 1000
+
+    # # SAP
+    # SAP_AUTH_URL: str
+    # SAP_BASIC_AUTH_HEADER: str
 
     class Config:
         case_sensitive = True

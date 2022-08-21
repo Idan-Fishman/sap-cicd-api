@@ -3,7 +3,7 @@ Defines base class with generic logic for CRUD operations.
 Every model should inherit this logic and enrich/override it if needed.
 """
 
-from typing import Any, Dict, Generic, List, Optional, Type, TypeVar, Union
+from typing import Any, Generic, Optional, Type, TypeVar, Union
 
 from fastapi import HTTPException, status
 from fastapi.encoders import jsonable_encoder
@@ -55,10 +55,8 @@ class BaseCRUD(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         session: AsyncSession,
         skip: int = 0,
         limit: int = settings.PAGE_SIZE,
-    ) -> List[ModelType]:
-        statement = (
-            select(self.model).offset(skip).limit(min(limit, settings.PAGE_SIZE))
-        )
+    ) -> list[ModelType]:
+        statement = select(self.model).offset(skip).limit(min(limit, settings.PAGE_SIZE))
         result = await session.execute(statement=statement)
         return result.scalars().all()
 
@@ -66,7 +64,7 @@ class BaseCRUD(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         self,
         session: AsyncSession,
         db_obj: ModelType,
-        in_obj: Union[UpdateSchemaType, Dict[str, Any]],
+        in_obj: Union[UpdateSchemaType, dict[str, Any]],
     ) -> ModelType:
         obj_data = jsonable_encoder(db_obj)
         if isinstance(in_obj, dict):

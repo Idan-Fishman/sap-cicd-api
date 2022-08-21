@@ -3,6 +3,7 @@ from typing import Optional
 
 from pydantic import BaseModel
 
+from .change_request import ChangeRequest
 
 # Shared properties
 class BranchBase(BaseModel):
@@ -15,6 +16,7 @@ class BranchCreate(BranchBase):
     title: str
 
 
+# Properties to receive via API on update
 class BranchUpdate(BranchBase):
     pass
 
@@ -34,4 +36,4 @@ class BranchDB(BranchBaseDB):
 
 # Additional properties to return via API
 class Branch(BranchBaseDB):
-    pass
+    change_requests: list[ChangeRequest]
